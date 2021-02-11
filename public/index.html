@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <title>Vonage Reverse Voice Verify</title>
+
+    <style>
+      body, div {
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        margin: 0;
+      }
+    </style>
+    <link rel="stylesheet" href="volta.min.css">
+  </head>
+  <body style="display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start; width: 100%; min-height: 100vh; max-width: 100%;">
+    
+    <script>
+      function waitForReady(callback) {
+        /in/.test(document.readyState) ? setTimeout('waitForReady('+callback+')', 9) : callback();
+      };
+
+      waitForReady(() => {
+        console.log('Ready');
+      });
+    </script>
+    
+    <script src="volta.min.js"></script>
+    <script src="popper.min.js"></script>
+    <script src="tooltip.min.js"></script>
+  </body>
+</html>
