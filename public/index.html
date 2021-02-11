@@ -11,13 +11,133 @@
       }
     </style>
     <link rel="stylesheet" href="volta.min.css">
+    <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
   </head>
-  <body style="display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start; width: 100%; min-height: 100vh; max-width: 100%;">
-    
+
+  <body style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; min-height: 100vh; max-width: 100%;">
+    <div id="login-container" style="display: flex; flex-direction: column;">
+      <div class="Vlt-card--gradient-wrapper Vlt-gradient--blue-to-pink">
+        <div class="Vlt-card">
+          <div class="Vlt-card__content">
+            <div style="display: flex; flex-direction: column;">
+              <h2>Login with Voice</h2>
+
+              <div class="Vlt-form__element Vlt-form__element--big">
+                <div class="Vlt-input">
+                  <input type="text" placeholder="6512341234" id="input-mobile-number" />
+                  <label for="ex-input">Mobile Number</label>
+                </div>
+                <small class="Vlt-form__element__hint">This should be a voice call number</small>
+              </div>
+
+              <button class="Vlt-btn Vlt-btn--primary Vlt-btn--app" onclick="login()">Call to Login</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="code-container" style="display: none; flex-direction: column;">
+      <div class="Vlt-card--gradient-wrapper Vlt-gradient--blue-to-pink">
+        <div class="Vlt-card">
+          <div class="Vlt-card__content">
+            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+              <label>Your OTP Code:</label>
+              <h2 id="label-code">000000</h2>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="main-container" style="display: none; flex-direction: column;">
+      <div class="Vlt-card--gradient-wrapper Vlt-gradient--blue-to-pink">
+        <div class="Vlt-card">
+          <div class="Vlt-card__content">
+            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+              <label>You are now logged in as:</label>
+
+              <h2 id="label-mobile-number">Test Number</h2>
+
+              <button class="Vlt-btn Vlt-btn--primary Vlt-btn--app" onclick="restart()">Restart</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="fail-container" style="display: none; flex-direction: column;">
+      <div class="Vlt-card--gradient-wrapper Vlt-gradient--blue-to-pink">
+        <div class="Vlt-card">
+          <div class="Vlt-card__content">
+            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+              <label>You have failed to login.</label>
+              <label>Please restart to try again.</label>
+              
+              <button class="Vlt-btn Vlt-btn--primary Vlt-btn--app" onclick="restart()">Restart</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script>
       function waitForReady(callback) {
         /in/.test(document.readyState) ? setTimeout('waitForReady('+callback+')', 9) : callback();
       };
+
+      function restart() {
+          document.getElementById('label-code').innerText = '';
+          document.getElementById('label-mobile-number').innerText = '';
+          document.getElementById('login-container').style.display = 'flex';
+          document.getElementById('code-container').style.display = 'none';
+          document.getElementById('main-container').style.display = 'none';
+          document.getElementById('fail-container').style.display = 'none';
+      }
+
+      async function login() {
+        try {
+          const mobileNumber = document.getElementById('input-mobile-number').value;
+          console.log(`Trying to login as ${mobileNumber}`);
+
+          const url = `login`;
+          const config = {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ mobileNumber }),
+          };
+          const response = await fetch(url, config);
+          const data = await response.json();
+          const { code } = data;
+          console.log(code);
+
+          document.getElementById('label-code').innerText = code;
+          document.getElementById('label-mobile-number').innerText = mobileNumber;
+          document.getElementById('login-container').style.display = 'none';
+          document.getElementById('code-container').style.display = 'flex';
+          document.getElementById('main-container').style.display = 'none';
+          document.getElementById('fail-container').style.display = 'none';
+        } catch (error) {
+          console.error(error);
+          alert(error.message);
+        }
+      }
+    
+      Pusher.logToConsole = true;
+      const pusher = new Pusher('e8b3e4cc0be7e9930490', { cluster: 'ap1'});
+      const channel = pusher.subscribe('auth');
+      channel.bind('login', data => {
+        const { mobileNumber, success } = data;
+        const inputMobileNumber = document.getElementById('input-mobile-number');
+        if (mobileNumber === inputMobileNumber.value) {
+          document.getElementById('login-container').style.display = 'none';
+          document.getElementById('code-container').style.display = 'none';
+          document.getElementById('main-container').style.display = success ? 'flex' : 'none';
+          document.getElementById('fail-container').style.display = success ? 'none' : 'flex';
+        }
+      });
 
       waitForReady(() => {
         console.log('Ready');

@@ -9,7 +9,7 @@ const pusher = new Pusher({
 });
 
 
-const notifyLogin = (mobileNumber) => pusher.trigger('auth', 'login', { mobileNumber });
+const notifyLogin = (mobileNumber, success = false) => pusher.trigger('auth', 'login', { mobileNumber, success });
 
 module.exports = {
   notifyLogin,
