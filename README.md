@@ -5,8 +5,14 @@ The generation of the TOTP is compliant with RFC 6238 (TOTP) using the following
 
 https://github.com/xarenard/simpleotp
 
+# Setup and Installation
+This application can be deployed directly to Heroku or a local instance. Follow the guide below for instructions.
 
-# Installation
+### Setup (Heroku)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/nexmo-se/reverse-voice-verify)
+
+
+### Setup (Local)
 1. Install required softwares: `nodejs`, `npm`, `git`
 
 2. Clone this repo:

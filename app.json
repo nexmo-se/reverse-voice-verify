@@ -1,0 +1,58 @@
+{
+  "name": "Vonage Reverse Voice Verify",
+  "description": "Reverse Voice Verify is an inverted way to verify OTP, verifying the OTP code using DTMF from a code visually displayed on the application/web page instead of getting the code via SMS or Voice as with Vonage Verify.",
+  "repository": "https://github.com/nexmo-se/reverse-voice-verify",
+  "logo": "https://node-js-sample.herokuapp.com/node.png",
+  "addons": [],
+  "env": {
+    "API_KEY": {
+      "desription": "Vonage (Nexmo) API Key",
+      "required": true
+    },
+    "API_SECRET" : {
+      "description": "Vonage (Nexmo) API Secret",
+      "required": true
+    },
+    "APPLICATION_ID": {
+      "description": "Vonage (Nexmo) Voice Application ID",
+      "required": true
+    },
+    "PRIVATE_KEY": {
+      "description": "Vonage (Nexmo) Voice Application Private Key content",
+      "required": true
+    },
+    "VOICE_HOST": {
+      "description": "Publicly accessible host of this application. Example: https://reverse-voice-verify.herokuapp.com",
+      "required": true
+    },
+    "VOICE_LVN": {
+      "description": "Long Virtual Number (LVN) to be used to make the calls",
+      "required": true
+    },
+    "PUSHER_APP_ID": {
+      "description": "Pusher App ID (Get from Pusher Dashboard)",
+      "required": true
+    },
+    "PUSHER_KEY": {
+      "description": "Pusher Key (Get from Pusher Dashboard)",
+      "required": true
+    },
+    "PUSHER_SECRET": {
+      "description": "Pusher Secret (Get from Pusher Dashboard)",
+      "required": true
+    },
+    "PUSHER_CLUSTER": {
+      "description": "Pusher Cluster (Get from Pusher Dashboard)",
+      "required": true
+    },
+    "TOTP_SECRET": {
+      "description": "A secret key to generate TOTP",
+      "required": true
+    },
+    "TOTP_USE": {
+      "description": "Use RFC 6238 (TOTP) to generate OTP",
+      "required": true,
+      "value": "true"
+    }
+  }
+}
