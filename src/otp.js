@@ -49,14 +49,18 @@ const verifySimple = async (mobileNumber, code) => {
 
 const generateRfc = async (mobileNumber) => {
   try {
+    const time = Math.floor(Date.now() / 1000);
     const code = totp.createToken({
       secret: totpSecret,
       num_digits: 6,
+      seconds: time,
     });
     otpMap[mobileNumber] = {
       code,
+      time,
       expiry: new Date().getTime() + 300000, // 5 minute expiry (300 seconds)
     };
+    console.log(otpMap[mobileNumber]);
     return Promise.resolve(code);
   } catch (error) {
     return Promise.reject(error);
@@ -70,8 +74,9 @@ const verifyRfc = async (mobileNumber, code) => {
       console.error('No such record for mobile number');
       return Promise.resolve(false);
     }
+    console.log(record);
 
-    const { code: expectedCode} = record;
+    const { code: expectedCode, time} = record;
     if (code !== expectedCode) {
       console.error('Incorrect code');
       return Promise.resolve(false);
@@ -81,6 +86,7 @@ const verifyRfc = async (mobileNumber, code) => {
       token: code,
       secret: totpSecret,
       num_digits: 6,
+      seconds: time,
     });
     if (!isValid) {
       console.error('Invalid code');
