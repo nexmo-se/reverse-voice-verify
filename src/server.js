@@ -84,12 +84,12 @@ app.post('/inbound/dtmfEvent', async (req, res, next) => {
     if (verified) {
       responseNcco.push({
         action: 'talk',
-        text: 'You have provided an incorrect O T P code. Please try again, thank you.',
+        text: 'You have successfully login.',
       });
     } else {
       responseNcco.push({
         action: 'talk',
-        text: 'You have successfully login.',
+        text: 'You have provided an incorrect O T P code. Please try again, thank you.',
       });
     }
 
@@ -117,6 +117,10 @@ app.get('/test', async (req, res, next) => {
     const mobileNumber = '12345678';
     const code = await otpService.generate(mobileNumber);
     console.log(code);
+
+    const wait = () => new Promise(r => setTimeout(r, 10000));
+    await wait();
+
     const verified = await otpService.verify(mobileNumber, code);
     console.log(verified);
     res.json({ mobileNumber, code });
