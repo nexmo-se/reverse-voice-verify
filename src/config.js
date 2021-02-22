@@ -8,7 +8,7 @@ const pusherAppId = process.env.PUSHER_APP_ID;
 const pusherKey = process.env.PUSHER_KEY;
 const pusherSecret = process.env.PUSHER_SECRET;
 const pusherCluster = process.env.PUSHER_CLUSTER;
-const isVidsInstance = process.env.VIDS_INSTANCE === 'true';
+const vidsUtilsPath = process.env.VIDS_UTILS_PATH;
 
 const getEnvConfig = async () => {
   return Promise.resolve({
@@ -29,20 +29,39 @@ const getEnvConfig = async () => {
 };
 
 const getVidsConfig = async (token) => {
-  return getEnvConfig();
+  const vidsUtils = require(vidsUtilsPath);
+  const nexmoIni = await vidsUtils.getIniStuff();
+  const userId = await vidsUtils.getIdFromJWT(nexmoIni, token);
+  const rawConfig = await vidsUtils.getNexmo(userId);
+
+  return Promise.resolve({
+    apiKey: rawConfig.key,
+    apiSecret: rawConfig.secret,
+  
+    applicationId: rawConfig.app_id,
+    privateKey: rawConfig.keyfile,
+  
+    voiceHost, // From Env
+    voiceLvn: rawConfig.vfrom,
+  
+    pusherAppId: rawConfig.pusher_id,
+    pusherKey: rawConfig.pusher_key,
+    pusherSecret: rawConfig.pusher_secret,
+    pusherCluster,
+  });
 }
 
 const getConfig = async (token) => {
   if (token === 'localtoken') {
     console.log('Using env config');
     return getEnvConfig();
-  } else if (isVidsInstance) {
+  } else if (vidsUtilsPath != null && vidsUtilsPath !== '') {
     console.log('Using VIDS config');
     return getVidsConfig(token);
   }
 
   // Default to Env
-    console.log('Using Default (env) config');
+  console.log('Using Default (env) config');
   return getEnvConfig();
 }
 
