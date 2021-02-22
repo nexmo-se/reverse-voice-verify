@@ -33,11 +33,17 @@ const getVidsConfig = async (token) => {
 }
 
 const getConfig = async (token) => {
-  if (isVidsInstance) {
-    return getVidsConfig(token);
-  } else {
+  if (token === 'localtoken') {
+    console.log('Using env config');
     return getEnvConfig();
+  } else if (isVidsInstance) {
+    console.log('Using VIDS config');
+    return getVidsConfig(token);
   }
+
+  // Default to Env
+    console.log('Using Default (env) config');
+  return getEnvConfig();
 }
 
 module.exports = {

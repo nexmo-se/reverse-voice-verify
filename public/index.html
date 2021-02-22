@@ -189,7 +189,7 @@
       waitForReady(() => {
         console.log('Ready');
         const params = getParams();
-        const { token } = params;
+        const { token = 'localtoken' } = params;
         console.log(token);
 
         vidsToken = token;

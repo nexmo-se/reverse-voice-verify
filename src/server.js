@@ -103,7 +103,7 @@ app.post('/inbound/dtmfEvent', async (req, res, next) => {
     const { dtmf: code, to: mobileNumber } = req.body;
     const verified = await otpService.verify(mobileNumber, code);
 
-    // Get VIDS Config
+    // Get Config
     const token = userTokens[mobileNumber];
     const config = await configService.getConfig(token);
     const { pusherAppId, pusherKey, pusherSecret, pusherCluster } = config;
@@ -142,7 +142,7 @@ app.post('/login', authenticate, async (req, res, next) => {
     // Save Token
     userTokens[mobileNumber] = token;
 
-    // Get VIDS Config
+    // Get Config
     const config = await configService.getConfig(token);
     const { voiceLvn, applicationId, privateKey } = config;
 
@@ -161,7 +161,7 @@ app.get('/pusherConfig', authenticate, async (req, res, next) => {
   try {
     const { token } = req;
 
-    // Get VIDS Config
+    // Get Config
     const config = await configService.getConfig(token);
     res.json({
       appId: config.apiKey,
