@@ -83,8 +83,30 @@
     </div>
 
     <script>
+      let vidsToken = null;
+
       function waitForReady(callback) {
         /in/.test(document.readyState) ? setTimeout('waitForReady('+callback+')', 9) : callback();
+      };
+
+      function getParams() {
+        const searchString = window.location.search || '?';
+        const query = searchString.slice(1);
+        const components = query.split(/&/g);
+        const params = {};
+
+        for (let i = 0; i < components.length; i += 1) {
+          const component = components[i];
+          const splitIndex = component.indexOf('=');
+          if (splitIndex >= 0) {
+            const rawKey = component.slice(0, splitIndex);
+            const rawValue = component.slice(splitIndex + 1);
+            const key = decodeURIComponent(rawKey);
+            const value = decodeURIComponent(rawValue);
+            params[key] = value;
+          }
+        }
+        return params;
       };
 
       function restart() {
@@ -106,6 +128,7 @@
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${vidsToken}`,
             },
             body: JSON.stringify({ mobileNumber }),
           };
@@ -125,23 +148,52 @@
           alert(error.message);
         }
       }
+
+      async function connectPusher() {
+        try {
+          console.log(`Loading Pusher Config`);
+
+          const url = `pusherConfig`;
+          const config = {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${vidsToken}`,
+            },
+          };
+          const response = await fetch(url, config);
+          const data = await response.json();
+          const { appId, cluster } = data;
+          console.log(`AppId: ${appId}, Cluster: ${cluster}`);
     
-      Pusher.logToConsole = true;
-      const pusher = new Pusher('e8b3e4cc0be7e9930490', { cluster: 'ap1'});
-      const channel = pusher.subscribe('auth');
-      channel.bind('login', data => {
-        const { mobileNumber, success } = data;
-        const inputMobileNumber = document.getElementById('input-mobile-number');
-        if (mobileNumber === inputMobileNumber.value) {
-          document.getElementById('login-container').style.display = 'none';
-          document.getElementById('code-container').style.display = 'none';
-          document.getElementById('main-container').style.display = success ? 'flex' : 'none';
-          document.getElementById('fail-container').style.display = success ? 'none' : 'flex';
+          // Initialize Pusher
+          Pusher.logToConsole = true;
+          const pusher = new Pusher(appId, { cluster });
+          const channel = pusher.subscribe('auth');
+          channel.bind('login', data => {
+            const { mobileNumber, success } = data;
+            const inputMobileNumber = document.getElementById('input-mobile-number');
+            if (mobileNumber === inputMobileNumber.value) {
+              document.getElementById('login-container').style.display = 'none';
+              document.getElementById('code-container').style.display = 'none';
+              document.getElementById('main-container').style.display = success ? 'flex' : 'none';
+              document.getElementById('fail-container').style.display = success ? 'none' : 'flex';
+            }
+          });
+        } catch (error) {
+          console.error(error);
+          alert(error.message);
         }
-      });
+      }
 
       waitForReady(() => {
         console.log('Ready');
+        const params = getParams();
+        const { token } = params;
+        console.log(token);
+
+        vidsToken = token;
+        connectPusher();
       });
     </script>
     

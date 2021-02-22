@@ -2,10 +2,9 @@ const axios = require('axios');
 const nexmoService = require('./nexmo');
 
 const voiceHost = process.env.VOICE_HOST;
-const voiceLvn = process.env.VOICE_LVN;
 
-const getConfig =  () => {
-  const token = nexmoService.generateJwt();
+const getConfig =  (applicationId, privateKey) => {
+  const token = nexmoService.generateJwt(applicationId, privateKey);
   return {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -13,7 +12,7 @@ const getConfig =  () => {
   };
 };
 
-const getBody = (mobileNumber) => ({
+const getBody = (mobileNumber, voiceLvn) => ({
   from: {
     type: 'phone',
     number: voiceLvn,
@@ -30,11 +29,11 @@ const getBody = (mobileNumber) => ({
   event_url: [`${voiceHost}/inbound/event`],
 })
 
-const makeVerifyCall = async (mobileNumber) => {
+const makeVerifyCall = async (mobileNumber, voiceLvn, applicationId, privateKey) => {
   try {
-    const url = 'https://api.nexmo.com/v1/calls';;
-    const config = getConfig();
-    const body = getBody(mobileNumber);
+    const url = 'https://api.nexmo.com/v1/calls';
+    const config = getConfig(applicationId, privateKey);
+    const body = getBody(mobileNumber, voiceLvn);
 
     const response = await axios.post(url, body, config);
     const { data } = response;
