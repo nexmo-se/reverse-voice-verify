@@ -14,7 +14,7 @@
     <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
   </head>
 
-  <body style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; min-height: 100vh; max-width: 100%;">
+  <body style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; margin-top: 50px; max-width: 100%;">
     <div id="login-container" style="display: flex; flex-direction: column;">
       <div class="Vlt-card--gradient-wrapper Vlt-gradient--blue-to-pink">
         <div class="Vlt-card">
@@ -31,7 +31,7 @@
                 <small class="Vlt-form__element__hint">Example: 6512345678 (Singapore) or 16501112222 (United States)</small>
               </div>
 
-              <button class="Vlt-btn Vlt-btn--primary Vlt-btn--app" onclick="login()">Call to Login</button>
+              <button id="login-button" class="Vlt-btn Vlt-btn--primary Vlt-btn--app" onclick="login()" disabled>Call to Login</button>
             </div>
           </div>
         </div>
@@ -163,12 +163,12 @@
           };
           const response = await fetch(url, config);
           const data = await response.json();
-          const { appId, cluster } = data;
-          console.log(`AppId: ${appId}, Cluster: ${cluster}`);
+          const { appKey, cluster } = data;
+          console.log(`App Key: ${appKey}, Cluster: ${cluster}`);
     
           // Initialize Pusher
           Pusher.logToConsole = true;
-          const pusher = new Pusher(appId, { cluster });
+          const pusher = new Pusher(appKey, { cluster });
           const channel = pusher.subscribe('auth');
           channel.bind('login', data => {
             const { mobileNumber, success } = data;
@@ -194,6 +194,8 @@
 
         vidsToken = token;
         connectPusher();
+
+        document.getElementById('login-button').disabled = false;
       });
     </script>
     

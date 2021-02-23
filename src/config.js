@@ -31,6 +31,7 @@ const getEnvConfig = async () => {
 const getVidsConfig = async (token) => {
   const vidsUtils = require(vidsUtilsPath);
   const nexmoIni = await vidsUtils.getIniStuff();
+  await vidsUtils.getDb(nexmoIni)
   const userId = await vidsUtils.getIdFromJWT(nexmoIni, token);
   const rawConfig = await vidsUtils.getNexmo(userId);
 
