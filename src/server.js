@@ -44,8 +44,14 @@ app.post('/inbound/answer', async (req, res, next) => {
         action: 'input',
         eventMethod: 'POST',
         eventUrl: [`${voiceHost}/inbound/dtmfEvent`],
-        maxDigits: 6,
-        timeOut: 10,
+        type: [ "dtmf", "speech" ],
+        dtmf: {
+                maxDigits: 6,
+                timeOut: 10,
+        },
+        speech: {
+                context:["1","2","3","4","5","6","7","8","9","0"]
+        }
       },
       {
         action: 'talk',
@@ -75,8 +81,15 @@ app.post('/inbound/event', async (req, res, next) => {
 app.post('/inbound/dtmfEvent', async (req, res, next) => {
   try {
     console.log('dtmf event');
-    console.log(req.body);
-    const { dtmf: code, to: mobileNumber } = req.body;
+    console.log(JSON.stringify(req.body));
+    let mobileNumber = req.body.to;
+    let code = undefined;
+    const { speech: sinput, dtmf: dinput } = req.body;
+    if(sinput.results instanceof Array && sinput.results.length > 0)
+        code = sinput.results[0].text.replace(/\s/g, '');
+    else
+        code = dinput.digits;
+    console.log(code+" "+mobileNumber);
     const verified = await otpService.verify(mobileNumber, code);
     pusherService.notifyLogin(mobileNumber, verified);
     
